@@ -17,6 +17,6 @@ spec:
       containers:
       - name: app-email
         image: rtprosa315/emailpy:1.0
-        imagePullPolicy: always
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
