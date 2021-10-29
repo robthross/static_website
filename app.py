@@ -32,6 +32,6 @@ class envio():
                 self.enviaremail()
 
 if __name__=='__main__':
-    # while True:
+    while True:
         au = envio()
         au.enviaremail()
