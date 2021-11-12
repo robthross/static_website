@@ -19,4 +19,4 @@ spec:
         image: rtprosa315/emailpy:1.0.50
         imagePullPolicy: Always
         ports:
-        - containerPort: 8081
+        - containerPort: 80
