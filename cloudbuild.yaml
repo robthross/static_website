@@ -1,0 +1,5 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v2', '.' ]
+images:
+- 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v2'
