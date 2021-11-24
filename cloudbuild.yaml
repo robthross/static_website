@@ -1,11 +1,12 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
+  id: build
   args: [ 'build', '-t', 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1', '.' ]
 images:
 - 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1'
 
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'push', 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v2']
-images:
-- 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v2'
+  args: [ 'push', 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
+# images:
+# - 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1'
