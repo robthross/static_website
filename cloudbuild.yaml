@@ -1,3 +1,4 @@
+export _PROJECT_ID=rtech-318519
 steps:
    - id: build
      name: gcr.io/cloud-builders/docker
@@ -5,8 +6,8 @@ steps:
      args:
      - -c
      - |
-       docker build -t us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:latest -f ./Dockerfile . &&
-       docker image inspect us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:latest --format \
+       docker build -t us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:v1 -f ./Dockerfile . &&
+       docker image inspect us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:v1 --format \
 
    - id: scan
      name: gcr.io/cloud-builders/gcloud
@@ -14,7 +15,7 @@ steps:
      args:
      - -c
      - |
-       gcloud artifacts docker images scan us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:latest \
+       gcloud artifacts docker images scan us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:v1 \
        --format='value(response.scan)' > /workspace/scan_id.txt
    - id: severity check
      name: gcr.io/cloud-builders/gcloud
@@ -31,5 +32,5 @@ steps:
      args:
      - -c
      - |
-       docker push us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:latest
-images: ['us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:latest']
+       docker push us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:v1
+images: ['us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:v1']
