@@ -6,7 +6,6 @@ steps:
      args:
      - -c
      - |
-       export _PROJECT_ID=
        docker build -t us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -f ./Dockerfile . &&
        docker image inspect us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 --format \
 
