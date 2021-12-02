@@ -7,8 +7,7 @@ steps:
      - |
        docker build -t us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:latest -f ./Dockerfile . &&
        docker image inspect us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:latest --format \
-       '{{index .RepoTags 0}}@{{.Id}}' > /workspace/image-digest.txt &&
-       cat image-digest.txt
+
    - id: scan
      name: gcr.io/cloud-builders/gcloud
      entrypoint: /bin/bash
