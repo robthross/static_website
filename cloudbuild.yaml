@@ -1,4 +1,4 @@
-# Modelo de Scan de Imagem
+# Modulo de Scan de Imagem
 steps:
    - id: build
      name: gcr.io/cloud-builders/docker
