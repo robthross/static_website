@@ -1,4 +1,4 @@
-export _PROJECT_ID=rtech-318519
+
 steps:
    - id: build
      name: gcr.io/cloud-builders/docker
@@ -6,6 +6,7 @@ steps:
      args:
      - -c
      - |
+       export _PROJECT_ID=rtech-318519
        docker build -t us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:v1 -f ./Dockerfile . &&
        docker image inspect us-central1-docker.pkg.dev/$_PROJECT_ID/gkespsc/artifatec-image:v1 --format \
 
