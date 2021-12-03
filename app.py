@@ -4,9 +4,15 @@ from time import sleep
 
 
 class envio():
+    def leranexo(self):
+        arquivo = open('anexo.txt', 'r')
+        self.anexo = arquivo.read()
+        arquivo.close()
+        return self.anexo
+    
     def enviaremail(self):
             try:
-                self.msgfrom = 'tpcriacao@gmail.com'
+                self.msgfrom = 'robson.thiago@ipnet.cloud'
                 self.smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
                 self.smtpobj.ehlo()
                 self.smtpobj.starttls()
@@ -15,9 +21,7 @@ class envio():
                 # print('1 - PARA SENHA PADRÃO')
                 # self.password = input('2 - PARA DIGITAR A SENHA:''\n')
                 self.smtpobj.login(self.msgto, self.senhapadrao)
-                self.msg = f'''
-                    EMAIL TESTE PARA ENVIO EXTERNO DO EMAIL {getpass.getuser()}@cnec.br
-                    '''
+                self.msg = 'Subject: {}\n\n{}'.format('Teste de envio de email', self.leranexo())
                 self.smtpobj.sendmail(self.msgto, self.msgfrom, 'Subject: EMAIL TESTE ENVIO EXTERNO\n{}'.format(self.msg))
                 self.teste = self.smtpobj.verify(self.msgfrom)
                 self.smtpobj.quit()
@@ -32,6 +36,6 @@ class envio():
                 self.enviaremail()
 
 if __name__=='__main__':
-    while True:
-        au = envio()
-        au.enviaremail()
+    #while True:
+    au = envio()
+    au.enviaremail()
