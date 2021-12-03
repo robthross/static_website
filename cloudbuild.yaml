@@ -126,6 +126,6 @@ steps:
          pwd
          ls $pw_d
          docker run --name sendmail us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
-         $pw_d:./opt/python \
+         $pw_d/anexo.txt:/opt/python/anexo.txt \
          --entrypoint /bin/bash opt
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
