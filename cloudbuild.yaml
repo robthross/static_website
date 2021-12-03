@@ -107,6 +107,7 @@ steps:
      - -c
      - |
        gsutil cp gs://rtech-318519_cloudbuild/*.txt .
+       cat *.txt > /workspace/anexo.txt
    - id: push
      name: gcr.io/cloud-builders/docker
      entrypoint: /bin/bash
@@ -114,6 +115,12 @@ steps:
      - -c
      - |
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
+   - id: Logging
+     name: 'gcr.io/cloud-builders/docker'
+     args: [ 'build', '-t', 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1', '.' ]
+   logsBucket: 'gs://mylogsbucket'
+   options:
+     logging: GCS_ONLY
    - name: 'gcr.io/cloud-builders/docker'
      id: Docker Run SendMail
      entrypoint: /bin/bash
