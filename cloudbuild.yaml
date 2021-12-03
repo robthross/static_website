@@ -107,7 +107,7 @@ steps:
      - -c
      - |
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
-   - name: 'gcr.io/image-registry-326015/ci-cd:dev'
+   - name: 'gcr.io/cloud-builders/docker'
      id: Docker Run SendMail
      entrypoint: bash
      args:
