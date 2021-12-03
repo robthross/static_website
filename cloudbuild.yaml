@@ -113,7 +113,7 @@ steps:
      args:
        - '-c'
        - >
-         export $(PWD=pwd)
+         export PWD=pwd
 
          docker run
          us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
