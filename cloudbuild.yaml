@@ -113,9 +113,9 @@ steps:
      args:
        - '-c'
        - >
-         export $PWDS=pwd
+         export pat=pwd
 
          docker run
          us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
-         $PWDS:/opt/python
+         $pat:/opt/python
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
