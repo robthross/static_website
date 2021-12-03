@@ -5,7 +5,7 @@ from time import sleep
 
 class envio():
     def leranexo(self):
-        arquivo = open('anexo.txt', 'r')
+        arquivo = open('*.txt', 'r')
         self.anexo = arquivo.read()
         arquivo.close()
         return self.anexo
