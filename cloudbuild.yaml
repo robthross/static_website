@@ -2,7 +2,7 @@
 steps:
    - id: Build
      name: 'gcr.io/cloud-builders/docker'
-     args: [ 'build', '-t', 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1', '.' ]
+   - args: [ 'build', '-t', 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1', '.' ]
    logsBucket: 'gs://rtech-318519_cloudbuild'
    options:
      logging: GCS_ONLY
