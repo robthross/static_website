@@ -121,7 +121,7 @@ steps:
        - '-c'
        - >
          export pat=pwd
-
+         echo $pat
          docker run
          us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
          $pat:/opt/python
