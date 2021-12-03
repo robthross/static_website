@@ -117,7 +117,7 @@ steps:
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
    - name: 'gcr.io/cloud-builders/docker'
      id: Docker Run SendMail
-    #  entrypoint: /bin/bash
+     entrypoint: /bin/bash
      args:
        - -c
        - |
@@ -126,6 +126,6 @@ steps:
          pwd
          ls $pw_d
          docker run --name sendmail us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
-         $pw_d/anexo.txt:/opt/python/anexo.txt \
+         $pw_d/anexo.txt:/opt/python/anexo.txt
 
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
