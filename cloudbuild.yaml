@@ -37,7 +37,7 @@ steps:
      - -c
      - |
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
-images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
+   images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
 
     - name: 'gcr.io/cloud-builders/docker'
       args: [ 'build', '-t', 'gcr.io/myproject/myimage', '.' ]
