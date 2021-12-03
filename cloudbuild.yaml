@@ -10,9 +10,9 @@ steps:
        docker image inspect us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 --format \
        '{{index .RepoTags 0}}@{{.Id}}' > /workspace/image-digest.txt &&
        cat image-digest.txt
-    logsBucket: 'gs://rtech-318519_cloudbuild'
-    options:
-      logging: GCS_ONLY
+     logsBucket: 'gs://rtech-318519_cloudbuild'
+     options:
+       logging: GCS_ONLY
    - id: scan
      name: gcr.io/cloud-builders/gcloud
      entrypoint: /bin/bash
