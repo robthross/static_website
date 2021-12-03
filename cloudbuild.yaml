@@ -121,9 +121,10 @@ steps:
      args:
        - -c
        - |
-         export PW_D=$(pwd)
-         echo $PW_D
-         ls $PW_D
+         export pw_d=$(pwd)
+         echo $pw_d
+         pwd
+         ls $pw_d
          docker run --name sendmail us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
-         $PW_D:./opt/python
+         $pw_d:./opt/python
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
