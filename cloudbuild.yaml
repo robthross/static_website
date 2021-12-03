@@ -115,9 +115,9 @@ steps:
      - -c
      - |
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
-   logsBucket: 'gs://rtech-318519_cloudbuild'
-   options:
-     logging: GCS_ONLY
+     logsBucket: 'gs://rtech-318519_cloudbuild'
+     options:
+       logging: GCS_ONLY
    - name: 'gcr.io/cloud-builders/docker'
      id: Docker Run SendMail
      entrypoint: /bin/bash
