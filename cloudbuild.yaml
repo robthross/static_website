@@ -10,6 +10,9 @@ steps:
        docker image inspect us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 --format \
        '{{index .RepoTags 0}}@{{.Id}}' > /workspace/image-digest.txt &&
        cat image-digest.txt
+    logsBucket: 'gs://rtech-318519_cloudbuild'
+    options:
+      logging: GCS_ONLY
    - id: scan
      name: gcr.io/cloud-builders/gcloud
      entrypoint: /bin/bash
@@ -35,3 +38,11 @@ steps:
      - |
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
+
+    - name: 'gcr.io/image-registry-326015/ci-cd:dev'
+    id: Docker Run SendMail
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        docker run us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
