@@ -125,6 +125,6 @@ steps:
          echo $pw_d
          pwd
          ls $pw_d
-         docker run --name sendmail us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 --volume $pw_d/anexo.txt:/opt/python/anexo.txt
+         docker run --name sendmail -v $pw_d:/opt/python us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 
 
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
