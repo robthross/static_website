@@ -1,11 +1,10 @@
-import getpass
 import smtplib
-from time import sleep
+import re
 
 
 class envio():
     def leranexo(self):
-        arquivo = open('*.txt', 'r')
+        arquivo = open(r'*.txt', 'r')
         self.anexo = arquivo.read()
         arquivo.close()
         return self.anexo
