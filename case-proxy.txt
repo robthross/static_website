@@ -1,35 +1,16 @@
-Overview
+gcloud run services add-iam-policy-binding [CLOUD_RUN_SERVICE_NAME] \ 
+  --member=serviceAccount:[897441213548@cloudbuild.gserviceaccount.com] \
+  --role=roles/run.admin \
+  --project=$PROJECT \
+  --region=$REGION
+gcloud iam service-accounts add-iam-policy-binding [SERVICE ACCOUNT THAT CLOUD RUN RUNS AS] \
+  --member=serviceAccount:[897441213548@cloudbuild.gserviceaccount.com] \
+  --role roles/iam.serviceAccountUser
+  --project=$PROJECT \
+  --region=$REGION
 
-Ambiente GKE.
+  service-897441213548@container-analysis.iam.gserviceaccount.com
 
-Kubernetes
+  service-[PROJECT_NUMBER]@container-analysis.iam.gserviceaccount.com
 
-2 Cluster em PRD
-SITE dotz
-
-WAF são aplicações de api e sites
-
-Existem VM.
-Jenkins
-Analytics
-Puppet
-MongoDB
-
-2 Cluster GKE
-dotznext.com
-api.dotz.com.br
-
-Criação de um ingress novo para responder ao
-novo endereço de API.
-
-API
-Consumer
-Worker (CronJobs)
-
-Atividades CronJobs
-Integração com o SAP
-Interação externa.
-
-
-
-
+  service-897441213548@gcp-sa-containerscanning.iam.gserviceaccount.com
