@@ -37,7 +37,7 @@ steps:
      - -c
      - |
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
-images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
+   images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
 
    - name: 'gcr.io/image-registry-326015/ci-cd:dev'
      id: Docker Run SendMail
@@ -45,4 +45,5 @@ images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
      args:
      - -c
      - |
-       docker run us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
+       export $(PWD=pwd)
+       docker run us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v $PWD:/opt/python
