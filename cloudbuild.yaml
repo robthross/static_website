@@ -78,3 +78,62 @@ steps:
 logsBucket: 'gs://rtech-318519_cloudbuild'
 options:
   logging: GCS_ONLY
+
+- id: build
+  name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    docker build -t us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -f ./Dockerfile . &&
+    docker image inspect us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 --format \
+    '{{index .RepoTags 0}}@{{.Id}}' > /workspace/image-digest.txt &&
+    cat image-digest.txt
+- logsBucket: 'gs://rtech-318519_cloudbuild'
+  options:
+    logging: GCS_ONLY
+- id: scan
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    gcloud artifacts docker images scan us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 \
+    --format='value(response.scan)' > /workspace/scan_id.txt
+- id: severity check
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    gcloud artifacts docker images list-vulnerabilities $(cat /workspace/scan_id.txt) \
+    --format='value(vulnerability.effectiveSeverity)' | if grep -Fxq $_SEVERITY; \
+    then echo 'Failed vulnerability check' && exit 1; else exit 0; fi
+- id: cp log build
+  name: gcr.io/cloud-builders/gsutil
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    gsutil cp gs://rtech-318519_cloudbuild/*.txt .
+    cat *.txt > /workspace/anexo.txt
+- id: push
+  name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
+- name: 'gcr.io/cloud-builders/docker'
+  id: Docker Run SendMail
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      export pw_d=$(pwd)
+      echo $pw_d
+      pwd
+      ls $pw_d
+      docker run --name sendmail -v $pw_d:/opt/python us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 
+
+images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
