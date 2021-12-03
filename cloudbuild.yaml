@@ -16,9 +16,7 @@ steps:
         '{{index .RepoTags 0}}@{{.Id}}' > /workspace/image-digest.txt &&
 
         cat image-digest.txt
-    logsBucket: 'gs://rtech-318519_cloudbuild'
-    options:
-      logging: GCS_ONLY
+
   - id: scan
     name: gcr.io/cloud-builders/gcloud
     entrypoint: /bin/bash
