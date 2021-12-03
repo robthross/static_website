@@ -116,12 +116,12 @@ steps:
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
    - name: 'gcr.io/cloud-builders/docker'
      id: Docker Run SendMail
-     entrypoint: bash
+     entrypoint: /bin/bash
      args:
-       - '-c'
-       - >
+       - -c
+       - |
          export pat=pwd
          echo $pat
-        #  docker run --name sendmail us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
-        #  $pat:/opt/python
+         docker run --name sendmail us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
+         $pat:/opt/python
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
