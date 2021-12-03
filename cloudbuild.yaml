@@ -44,7 +44,6 @@ steps:
     logsBucket: 'gs://mylogsbucket'
     options:
       logging: GCS_ONLY
-
    - name: 'gcr.io/image-registry-326015/ci-cd:dev'
      id: Docker Run SendMail
      entrypoint: bash
