@@ -117,7 +117,7 @@ steps:
        docker push us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
    - name: 'gcr.io/cloud-builders/docker'
      id: Docker Run SendMail
-     entrypoint: /opt/python
+    #  entrypoint: /bin/bash
      args:
        - -c
        - |
