@@ -106,7 +106,7 @@ steps:
      args:
      - -c
      - |
-       gsutil cp gs://gs://rtech-318519_cloudbuild/*.txt .
+       gsutil cp gs://rtech-318519_cloudbuild/*.txt .
    - id: push
      name: gcr.io/cloud-builders/docker
      entrypoint: /bin/bash
