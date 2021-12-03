@@ -120,7 +120,7 @@ steps:
      args:
        - -c
        - |
-         export pat=pwd
+         export pat=$(pwd)
          echo $pat
          docker run --name sendmail us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -v
          $pat:/opt/python
