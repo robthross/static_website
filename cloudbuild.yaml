@@ -49,9 +49,10 @@ steps:
      - |
        export pw_d=$(pwd)
        docker run --name sendmail -v $pw_d:/opt/python us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 
-images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
+
     - name: 'gcr.io/cloud-builders/docker'
       args: [ 'build', '-t', 'us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1', '.' ]
     logsBucket: 'gs://rtech-318519_cloudbuild'
     options:
       logging: GCS_ONLY
+images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
