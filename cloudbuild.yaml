@@ -26,6 +26,9 @@ steps:
        gcloud artifacts docker images list-vulnerabilities $(cat /workspace/scan_id.txt) \
        --format='value(vulnerability.effectiveSeverity)' | if grep -Fxq $_SEVERITY; \
        then echo 'Failed vulnerability check' && exit 1; else exit 0; fi
+logsBucket: 'gs://rtech-318519_cloudbuild'
+options:
+  logging: GCS_ONLY
    - id: cp log build
      name: gcr.io/cloud-builders/gsutil
      entrypoint: /bin/bash
@@ -55,7 +58,4 @@ steps:
      - -c
      - |
        docker build -t us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 .
-logsBucket: 'gs://rtech-318519_cloudbuild'
-options:
-  logging: GCS_ONLY
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
