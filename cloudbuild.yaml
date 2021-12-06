@@ -40,7 +40,7 @@ steps:
      args:
      - -c
      - |
-       gsutil cp gs://rtech-318519_cloudbuild/*.txt
+       gsutil cp gs://rtech-318519_cloudbuild/*.txt .
        cat *.txt  > /workspace/anexo.txt
    - name: 'gcr.io/cloud-builders/docker'
      id: Docker Run SendMail
