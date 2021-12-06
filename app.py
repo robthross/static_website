@@ -22,7 +22,7 @@ class envio():
                 # self.password = input('2 - PARA DIGITAR A SENHA:''\n')
                 self.smtpobj.login(self.msgto, self.senhapadrao)
                 self.msg = 'Subject: {}\n\n{}'.format('Teste de envio de email', self.leranexo())
-                self.smtpobj.sendmail(self.msgto, self.msgfrom, 'Subject: EMAIL TESTE ENVIO EXTERNO\n{}'.format(self.msg))
+                self.smtpobj.sendmail(self.msgto, self.msgfrom, 'Subject: Envio do Log do Cloud Build!!\n{}'.format(self.msg))
                 self.teste = self.smtpobj.verify(self.msgfrom)
                 self.smtpobj.quit()
                 print("Envio do Log do Cloud Build!!")
