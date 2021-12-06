@@ -49,6 +49,7 @@ steps:
      - -c
      - |
        export pw_d=$(pwd)
+       ls $pw_d
        docker run --name sendmail -v $pw_d:/opt/python us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
   #  - name: 'gcr.io/cloud-builders/docker'
   #    entrypoint: /bin/bash
