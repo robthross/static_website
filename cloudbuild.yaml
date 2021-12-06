@@ -6,9 +6,9 @@ steps:
      - -c
      - |
        docker build -t us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 -f ./Dockerfile . &&
-       docker image inspect us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 --format \
-       '{{index .RepoTags 0}}@{{.Id}}' > /workspace/image-digest.txt &&
-       cat image-digest.txt
+      #  docker image inspect us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 --format \
+      #  '{{index .RepoTags 0}}@{{.Id}}' > /workspace/image-digest.txt &&
+      #  cat image-digest.txt
   #  - id: scan
   #    name: gcr.io/cloud-builders/gcloud
   #    entrypoint: /bin/bash
