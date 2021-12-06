@@ -1,13 +1,1 @@
-gcloud run services add-iam-policy-binding [CLOUD_RUN_SERVICE_NAME] \ 
-  --member=serviceAccount:[897441213548@cloudbuild.gserviceaccount.com] \
-  --role=roles/run.admin \
-  --project=$PROJECT \
-  --region=$REGION
-gcloud iam service-accounts add-iam-policy-binding [SERVICE ACCOUNT THAT CLOUD RUN RUNS AS] \
-  --member=serviceAccount:[897441213548@cloudbuild.gserviceaccount.com] \
-  --role roles/iam.serviceAccountUser
-  --project=$PROJECT \
-  --region=$REGION
-
-  service-897441213548@container-analysis.iam.gserviceaccount.com
-    service-897441213548@gcp-sa-containerscanning.iam.gserviceaccount.com
+.
