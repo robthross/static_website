@@ -49,12 +49,12 @@ steps:
      - |
        export pw_d=$(pwd)
        docker run --name sendmail -v $pw_d:/opt/python us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
-   - name: 'gcr.io/cloud-builders/docker'
-     entrypoint: /bin/bash
-     args: 
-     - -c
-     - |
-       docker build -t us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 .
+  #  - name: 'gcr.io/cloud-builders/docker'
+  #    entrypoint: /bin/bash
+  #    args: 
+  #    - -c
+  #    - |
+  #      docker build -t us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 .
    - id: rm log build
      name: gcr.io/cloud-builders/gsutil
      entrypoint: /bin/bash
