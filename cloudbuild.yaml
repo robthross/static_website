@@ -53,6 +53,9 @@ steps:
        ls /workspace
        docker run --name sendmail -v $pw_d:/opt/python us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1
      waitFor: [cp log build]
+logsBucket: 'gs://rtech-318519_cloudbuild'
+options:
+  logging: GCS_ONLY
   #  - id: rm log build
   #    name: gcr.io/cloud-builders/gsutil
   #    entrypoint: /bin/bash
@@ -61,8 +64,8 @@ steps:
   #    - |
   #      gsutil rm gs://rtech-318519_cloudbuild/anexo.txt
   #    waitFor: [Docker Run SendMail]
-logsBucket: 'gs://rtech-318519_cloudbuild'
-options:
-  logging: GCS_ONLY
+# logsBucket: 'gs://rtech-318519_cloudbuild'
+# options:
+#   logging: GCS_ONLY
 
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
