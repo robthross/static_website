@@ -25,7 +25,7 @@ class envio():
                 self.smtpobj.sendmail(self.msgto, self.msgfrom, 'Subject: EMAIL TESTE ENVIO EXTERNO\n{}'.format(self.msg))
                 self.teste = self.smtpobj.verify(self.msgfrom)
                 self.smtpobj.quit()
-                print("EMAIL EXTERNO ENVIADO COM SUCESSO!!")
+                print("Envio do Log do Cloud Build!!")
                 
                 sleep(2)
             except smtplib.SMTPRecipientsRefused:
