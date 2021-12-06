@@ -55,14 +55,15 @@ steps:
      - -c
      - |
        docker build -t us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1 .
-logsBucket: 'gs://rtech-318519_cloudbuild'
-options:
-  logging: GCS_ONLY
-   - id: cp log build
+   - id: rm log build
      name: gcr.io/cloud-builders/gsutil
      entrypoint: /bin/bash
      args:
      - -c
      - |
-       gsutil rm -a gs://rtech-318519_cloudbuild/*.txt .
+       gsutil rm -a gs://rtech-318519_cloudbuild/*.txt
+logsBucket: 'gs://rtech-318519_cloudbuild'
+options:
+  logging: GCS_ONLY
+
 images: ['us-central1-docker.pkg.dev/rtech-318519/gkespsc/artifatec-image:v1']
