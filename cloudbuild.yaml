@@ -33,7 +33,7 @@ steps:
      - -c
      - |
        gsutil cp gs://rtech-318519_cloudbuild/*.txt .
-       mv *.txt > /workspace/anexo.txt
+       cp *.txt > /workspace/anexo.txt
    - id: push
      name: gcr.io/cloud-builders/docker
      entrypoint: /bin/bash
