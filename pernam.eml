@@ -33,3 +33,4 @@ https://build-notification-lg6olxqcca-uc.a.run.app
    --topic=cloud-builds \
    --push-endpoint=https://build-notification-lg6olxqcca-uc.a.run.app \
    --push-auth-service-account=cloud-run-pubsub-invoker@pso-itau-c4m-workbench.iam.gserviceaccount.com
+
