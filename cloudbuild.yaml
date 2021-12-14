@@ -78,6 +78,7 @@ steps:
          terraform plan
          terraform apply --auto-approve
 
+
   - name: 'alpine/gcloud:latest'
     id: Consumindo os secrets
     entrypoint: 'bash'
