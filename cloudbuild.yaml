@@ -71,7 +71,7 @@
 steps:
   - name: 'hashicorp/terraform:latest'
     id: Terraformando
-    entrypoint: bash
+    entrypoint: /bin/bash
     args: 
       - -c
       - |
@@ -81,7 +81,7 @@ steps:
 
   - name: 'alpine/gcloud:latest'
     id: Consumindo os secrets
-    entrypoint: 'bash'
+    entrypoint: /bin/bash
     args: 
     - -c
     - |-
