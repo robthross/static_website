@@ -1,0 +1,165 @@
+version: 2.1
+
+base_config: &base_config
+  docker:
+    - image: cimg/node:16.19.1
+  working_directory: ~/project
+
+orbs:
+  gcp-cli: circleci/gcp-cli@3.0.1
+  gcp-storage: freighthub/gcp-storage@0.2.0
+  gcp-auth: entur/gcp-auth@0.0.4
+
+jobs:
+  config-project-dev:
+    <<: *base_config
+    steps:
+      - checkout
+      - run:
+          name: Construindo arquivo .env
+          command: |
+            echo REACT_APP_API_GATEWAY=${DEV_REACT_APP_API_GATEWAY} >> .env
+            echo REACT_APP_AUTH0_DOMAIN=${DEV_REACT_APP_AUTH0_DOMAIN} >> .env
+            echo REACT_APP_AUTH0_CLIENT_ID=${DEV_REACT_APP_AUTH0_CLIENT_ID} >> .env
+            echo REACT_APP_AUTH0_CALLBACK_URL=${DEV_REACT_APP_AUTH0_CALLBACK_URL} >> .env
+            echo REACT_APP_AUTH0_LOGOUT_URL=${DEV_REACT_APP_AUTH0_LOGOUT_URL} >> .env
+            echo AUTH0_AUDIENCE=${DEV_AUTH0_AUDIENCE} >> .env
+
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - ./
+
+  config-project-prod:
+    <<: *base_config
+    steps:
+      - checkout
+      - run:
+          name: Construindo arquivo .env
+          command: |
+            echo REACT_APP_API_GATEWAY=${PROD_REACT_APP_API_GATEWAY} >> .env
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - ./
+
+  yarn-install-build:
+    <<: *base_config
+    environment:
+      CI: 'false'
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - restore_cache:
+          keys:
+            # "package.json" can be used if it is committed to the repo
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run:
+          name: Instalando das dependencias
+          command: yarn
+      - run:
+          name: Instalando das dependencias
+          command: yarn build
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - ./
+
+  gcp-deploy-auth-dev:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - gcp-cli/install
+      - run:
+          name: version
+          command: |
+            gcloud version
+            gcloud components update
+      - run:
+          name: auth
+          command: |
+            echo $GCLOUD_SERVICE_KEY_01
+            echo $GCLOUD_SERVICE_KEY_01 > /tmp/keyfile.json
+            gcloud auth activate-service-account --key-file=/tmp/keyfile.json
+            gcloud config set project $GOOGLE_PROJECT_ID_01
+      - run:
+          name: deploy
+          command: |
+            gsutil -m cp -r "./build/*" "gs://$DEV_BUCKET_01/"
+
+  gcp-deploy-auth-prod:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - gcp-cli/install
+      - run:
+          name: version
+          command: |
+            gcloud version
+            gcloud components update
+      - run:
+          name: auth
+          command: |
+            echo $GCLOUD_SERVICE_KEY_01
+            echo $GCLOUD_SERVICE_KEY_01 > /tmp/keyfile.json
+            gcloud auth activate-service-account --key-file=/tmp/keyfile.json
+            gcloud config set project $GOOGLE_PROJECT_ID_01
+      - run:
+          name: deploy
+          command: |
+            gsutil -m cp -r "./build/*" "gs://$PROD_BUCKET_01/"
+
+workflows:
+  build:
+    jobs:
+      - config-project-dev:
+          filters:
+            branches:
+              ignore:
+                - main
+      - yarn-install-build:
+          requires:
+            - config-project-dev
+
+  deploy-dev:
+    jobs:
+      - config-project-dev:
+          filters:
+            branches:
+              only:
+                - main
+      - yarn-install-build:
+          requires:
+            - config-project-dev
+      - gcp-deploy-auth-dev:
+          requires:
+            - yarn-install-build
+
+  optional-deploy-prod:
+    jobs:
+      - approval-optional-deploy:
+          type: approval
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - config-project-prod:
+          requires:
+            - approval-optional-deploy
+      - yarn-install-build:
+          requires:
+            - config-project-prod
+      - gcp-deploy-auth-prod:
+          requires:
+            - yarn-install-build
