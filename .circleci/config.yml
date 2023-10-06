@@ -117,6 +117,7 @@ workflows:
             branches:
               ignore:
                 - main
+                - develop
       - yarn-install-build:
           requires:
             - config-project-dev
