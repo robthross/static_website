@@ -6,7 +6,6 @@ Este projeto está neste repositório: [Houer](LINK_DO_REPO).
 
 No diretório do projeto, você pode executar:
  
-
 ### `yarn start`
 
 Executa o aplicativo no modo de desenvolvimento.
