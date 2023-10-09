@@ -2,154 +2,197 @@ version: 2.1
 
 base_config: &base_config
   docker:
-    - image: cimg/node:16.19.1
+    - image: cimg/openjdk:17.0
   working_directory: ~/project
-  
+
 orbs:
   gcp-cli: circleci/gcp-cli@3.0.1
   gcp-storage: freighthub/gcp-storage@0.2.0
   gcp-auth: entur/gcp-auth@0.0.4
-
+  
 jobs:
-  config-project-dev:
-    <<: *base_config
-    steps:
-      - checkout
-      - run:
-          name: Construindo arquivo .env
-          command: |
-            echo Ambiente de Desenvolvimento
-
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - ./
-
-  config-project-prod:
-    <<: *base_config
-    steps:
-      - checkout
-      - run:
-          name: Construindo arquivo .env
-          command: |
-            echo Ambiente de produção
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - ./
-
-  yarn-install-build:
+  build-dev:
     <<: *base_config
     environment:
-      CI: 'false'
+      CI: "false"
     steps:
+      - checkout
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - ./
       - attach_workspace:
           at: ~/project
-      - restore_cache:
-          keys:
-            # "package.json" can be used if it is committed to the repo
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
-          name: Instalando das dependencias
-          command: echo Instalando das dependencias
+          name: Given Gradlew permission to execute
+          command: chmod +x gradlew
       - run:
-          name: Instalando das dependencias
-          command: echo Instalando das dependencias
-      - save_cache:
-          key: v1-dependencies-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
+          name: Building
+          command: ./gradlew build
       - persist_to_workspace:
           root: ~/project
           paths:
             - ./
 
-  gcp-deploy-auth-dev:
-    docker:
-      - image: cimg/base:stable
+  deploy-dev:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
     steps:
       - attach_workspace:
           at: ~/project
       - gcp-cli/install
       - run:
-          name: version
+          name: Install GCP CLI
           command: |
-            gcloud version
-            gcloud components update
+            echo $GCLOUD_SERVICE_KEY_DEV > /tmp/keyfile.json
+            gcloud auth activate-service-account --key-file=/tmp/keyfile.json
+            gcloud config set project $GOOGLE_PROJECT_ID_DEV
+            gcloud components install kubectl
       - run:
-          name: auth
+          name: Install kubectl for running kubernetes commands
           command: |
-            echo Deploy Desenvolvimento
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+            kubectl version --client
       - run:
-          name: deploy
+          name: Configure access to GKE cluster
           command: |
-            echo Sincronizando com Gcloud Bucket Desenvolvimento
+            gcloud container clusters get-credentials $CLUSTER_NAME_DEV --region us-central1 --project $PROJECT_ID_DEV
+            export KUBECONFIG=$HOME/.kube/config
+            kubectl get nodes
+      - run:
+          name: Build and push docker image to GCP registry
+          command: |
+            set -x
+            export TAG=1.$CIRCLE_BUILD_NUM
+            echo $TAG
+            gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+            echo $GCLOUD_SERVICE_KEY_DEV > service_key.json
+            docker build -t $IMAGE_NAME --build-arg database=${BIGQUERY_DATABASE} --build-arg service_key=${GOOGLE_SERVICE_ACCOUNT_KEY} --build-arg cors_origin=${MICRONAUT_CORS} . 
+            docker tag $IMAGE_NAME us-central1-docker.pkg.dev/$PROJECT_ID_DEV/$PROJECT_NAME_DEV/$IMAGE_NAME:$TAG
+            docker push us-central1-docker.pkg.dev/$PROJECT_ID_DEV/$PROJECT_NAME_DEV/$IMAGE_NAME:$TAG
+      - run:
+          name: Deploy the docker image to GKE cluster
+          command: |
+            set -x 
+            export TAG=1.$CIRCLE_BUILD_NUM
+            echo $TAG
+            echo $K8S_PATH
+            sed -i -e "s/IMG_TAG/$TAG/g" $K8S_PATH
+            cat $K8S_PATH
+            kubectl create secret docker-registry $NAME_SPACE_DEV --namespace=$NAME_SPACE_DEV \
+              --docker-server=us-central1-docker.pkg.dev\
+              --docker-username=_json_key \
+              --docker-email=houer-dev@ultimate-choir-381918.iam.gserviceaccount.com \
+              --docker-password="$(cat /tmp/keyfile.json)" || echo 'secret exists'
+            kubectl apply -f $K8S_PATH
+            sleep 5
+            kubectl get svc -n $NAME_SPACE_DEV
 
-  gcp-deploy-auth-prod:
-    docker:
-      - image: cimg/base:stable
+  build-prod:
+    <<: *base_config
+    environment:
+      CI: "false"
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - ./
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Given Gradlew permission to execute
+          command: chmod +x gradlew
+      - run:
+          name: Building
+          command: ./gradlew build
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - ./
+
+  deploy-prod:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
     steps:
       - attach_workspace:
           at: ~/project
       - gcp-cli/install
       - run:
-          name: version
+          name: Install GCP CLI
           command: |
-            gcloud version
-            gcloud components update
+            echo $GCLOUD_SERVICE_KEY_PROD > /tmp/keyfile.json
+            gcloud auth activate-service-account --key-file=/tmp/keyfile.json
+            gcloud config set project $GOOGLE_PROJECT_ID_PROD
+            gcloud components install kubectl
       - run:
-          name: auth
+          name: Install kubectl for running kubernetes commands
           command: |
-            echo Deploy Produção
-
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+            kubectl version --client
       - run:
-          name: deploy
+          name: Configure access to GKE cluster
           command: |
-            echo Sincronizando com Gcloud Bucket Produção
+            gcloud container clusters get-credentials $CLUSTER_NAME_PROD --region us-central1 --project $PROJECT_ID_PROD
+            export KUBECONFIG=$HOME/.kube/config
+            kubectl get nodes
+      - run:
+          name: Build and push docker image to GCP registry
+          command: |
+            set -x
+            export TAG=1.$CIRCLE_BUILD_NUM
+            echo $TAG
+            gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+            echo $GCLOUD_SERVICE_KEY_PROD > service_key.json
+            docker build -t $IMAGE_NAME --build-arg database=${BIGQUERY_DATABASE} --build-arg service_key=${GOOGLE_SERVICE_ACCOUNT_KEY_PROD} --build-arg cors_origin=${MICRONAUT_CORS} . 
+            docker tag $IMAGE_NAME us-central1-docker.pkg.dev/$PROJECT_ID_PROD/$PROJECT_NAME_PROD/$IMAGE_NAME:$TAG
+            docker push us-central1-docker.pkg.dev/$PROJECT_ID_PROD/$PROJECT_NAME_PROD/$IMAGE_NAME:$TAG
+      - run:
+          name: Deploy the docker image to GKE cluster
+          command: |
+            set -x 
+            export TAG=1.$CIRCLE_BUILD_NUM
+            echo $TAG
+            echo $K8S_PATH
+            sed -i -e "s/IMG_TAG/$TAG/g" $K8S_PATH
+            cat $K8S_PATH
+            kubectl create secret docker-registry $NAME_SPACE_PROD --namespace=$NAME_SPACE_PROD \
+              --docker-server=us-central1-docker.pkg.dev\
+              --docker-username=_json_key \
+              --docker-email=houer-dev@ultimate-choir-381918.iam.gserviceaccount.com \
+              --docker-password="$(cat /tmp/keyfile.json)" || echo 'secret exists'
+            kubectl apply -f $K8S_PATH
+            sleep 5
+            kubectl get svc -n $NAME_SPACE_PROD
 
 workflows:
-  build:
-    jobs:
-      - config-project-dev:
-          filters:
-            branches:
-              ignore:
-                - main
-                - develop
-      - yarn-install-build:
-          requires:
-            - config-project-dev
-
   deploy-dev:
     jobs:
-      - config-project-dev:
+      - build-dev:
           filters:
             branches:
               only:
-                - develop
-      - yarn-install-build:
+                - dev
+      - deploy-dev:
           requires:
-            - config-project-dev
-      - gcp-deploy-auth-dev:
-          requires:
-            - yarn-install-build
+            - gradle-build
 
-  optional-deploy-prod:
+
+  deploy-prod:
     jobs:
-      - approval-optional-deploy:
+      - approval-deploy-prd:
           type: approval
           filters:
             branches:
               only:
                 - main
-      - config-project-prod:
+      - build-prod:
           requires:
-            - approval-optional-deploy
-      - yarn-install-build:
+            - approval-deploy-prd
+      - deploy-prod:
           requires:
-            - config-project-prod
-      - gcp-deploy-auth-prod:
-          requires:
-            - yarn-install-build
+            - gradle-build
