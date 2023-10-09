@@ -1,0 +1,29 @@
+const mesoregionsColors = {
+  'CAMPO DAS VERTENTES': '#A4CEE0',
+  'CENTRAL MINEIRA': '#FEFFB0',
+  JEQUITINHONHA: '#A3C5C7',
+  'METROPOLITANA DE BELO HORIZONTE': '#DCDCDC',
+  'NOROESTE DE MINAS': '#D2CEE5',
+  'NORTE DE MINAS': '#DFE1B0',
+  'OESTE DE MINAS': '#C0E3C3',
+  'SUL/SUDOESTE DE MINAS': '#FFC6C5',
+  'TRIÂNGULO MINEIRO/ALTO PARANAÍBA': '#F0D794',
+  'VALE DO MUCURI': '#FDB563',
+  'VALE DO RIO DOCE': '#CDEBC7',
+  'ZONA DA MATA': '#CDEBC7'
+}
+export const citiesColors = [
+  '#A4CEE0',
+  '#FEFFB0',
+  '#A3C5C7',
+  '#DCDCDC',
+  '#D2CEE5',
+  '#DFE1B0',
+  '#C0E3C3',
+  '#FFC6C5',
+  '#F0D794',
+  '#FDB563',
+  '#CDEBC7'
+]
+
+export default mesoregionsColors

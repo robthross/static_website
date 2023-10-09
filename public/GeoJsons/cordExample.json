@@ -1,0 +1,13 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-47.9088585258002, -18.9038909050411]]
+      },
+      "properties": { "Empreendim": "Indianópolis - BR-365", "ID": 1 }
+    }
+  ]
+}

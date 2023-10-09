@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": false,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": false,
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "jsx": "react",
+    "noImplicitAny": true
+  },
+  "include": ["src", "next-env.d.ts", "**/*.ts", "**/*.tsx", "./jest-setup.ts"],
+  "exclude": ["node_modules", "storybook-static"],
+  "paths": {
+    "crypto": ["node_modules/crypto-js"]
+  }
+}
