@@ -179,7 +179,7 @@ workflows:
                 - dev
       - deploy-dev:
           requires:
-            - gradle-build
+            - build-dev
 
 
   deploy-prod:
@@ -195,4 +195,4 @@ workflows:
             - approval-deploy-prd
       - deploy-prod:
           requires:
-            - gradle-build
+            - build-prod
