@@ -1,7 +1,0 @@
-{
-  "presets": ["@babel/preset-react"],
-  "plugins": [
-    "babel-plugin-styled-components",
-    "@babel/plugin-transform-modules-commonjs"
-  ]
-}
