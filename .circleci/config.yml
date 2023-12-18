@@ -148,9 +148,9 @@ workflows:
     jobs:
       - build:
           filters:
-            branches:
+            tags:
               only:
-                - develop
+                - /^v\d+\.\d+\.\d+$/
       - deploy-dev:
           requires:
             - build
