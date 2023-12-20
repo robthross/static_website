@@ -151,7 +151,7 @@ workflows:
           filters:
             branch:
               only:
-                - feature/**
+                - 'feature/*'
       - deploy-dev:
           requires:
             - build
