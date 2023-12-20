@@ -149,7 +149,7 @@ workflows:
     jobs:
       - build:
           filters:
-            branch:
+            branches:
               only:
                 - 'feature/*'
       - deploy-dev:
