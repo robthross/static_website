@@ -35,12 +35,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Google Cloud CLI
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
-        with:
-          version: 'latest'
-          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_DEV }}
-          project_id: ${{ secrets.GOOGLE_PROJECT_ID_DEV }}
+      # - name: Set up Google Cloud CLI
+      #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
+      #   with:
+      #     version: 'latest'
+      #     service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_DEV }}
+      #     project_id: ${{ secrets.GOOGLE_PROJECT_ID_DEV }}
 
       - name: Realizando Deploy em Develop
         run: echo Deploy Application in Dev Environment
@@ -53,12 +53,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Google Cloud CLI
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
-        with:
-          version: 'latest'
-          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_PROD }}
-          project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+      # - name: Set up Google Cloud CLI
+      #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
+      #   with:
+      #     version: 'latest'
+      #     service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_PROD }}
+      #     project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
 
       - name: Realizando Deploy em Produção
         run: echo Deploy Application in Prd Environment
