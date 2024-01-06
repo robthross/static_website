@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "ultimate-choir-381918",
+  "private_key_id": "60896496add5f78c760101ff079fb7592fbe2b81",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfUJnla0FkzmVX\nDha05Q54kZqpaSCVl/s5PR9e41t0zzUAEKr6VSllM0SbD4y8aYWrymxK/G/q76lN\nSPS633hsgJyvEJoR4gHozY2jLYmqWEYRUV6Sq+90bE+fvBnST/AckoIqtAtcBZcf\nEbMSfFlMVmcixbD0x6YtvqG2nFzlOfEVlRwJIUENv+I65ieVfILAvgEEhm3VAnmv\nujTeMKPGlQlSiJ5wQPMhnUydVt+iho/pT7tttpUSUu1fy2yATy2JrFpntqGfM8ZB\nlrRU58HSfLvVnRmpT/f/C5tw+oxSksXzM5h173Uyq6BLI8O4hjWlt7AdY+2Kdzyg\n2TUEx6FVAgMBAAECggEADT8bOeQgV2n00fKofyd9McK1UWpGgAkpYk5RX5AN+0JV\nSwEyGzJVB8dAQRBtkTmTL8sMnHAX9XAs80QqHDGoU4tXf/z0nq3w3g3fYngPi/a7\nhUh12y5uwFGycW+3emW6gP9h0EWozNcaDUJABI8yvtf7OzFN219CaME/l3Tz/7bR\nS/JuVANmKEX4OkIHdcDmwvFUnRBn4rswfrPFlMMJKIPcaoloXmhOV9Iseu2SX5sF\n3JdTGyREwdG2uOQufv4Kd+w3+9pB/QtDGa7I9KBuEcV3OCa4M/Hpi9HNkltrnf3Y\na7RT2Ax6Ew4x+Orh7QuMQ0+r5KmHLFHdfce9tkTg6wKBgQDvnvMOaqOBzsI8LRyT\neqQBHfJiaB7R6pPLNVJjfemx4/Jk0rIptFyhALZKLBkqLOXepqZ6KUUw5lkK4cXy\nvFNLQ4+iIskCUTM2qHegxBcQDekYGMTxAiGvwC8Ati+U5Z57nzo2NHLK3y8C9Dob\nuHNxEFnu6UXTf+Fq8gg1GtME/wKBgQDulFE8DGqSpyCmIz0AvgDfa2hgdBoavOQD\n3M3N2cyprNU4tMtduxcThxqNSOc5pVgok64MloC90tjj3kVCxIIgPjsElk40cJdJ\nb7U+NfJl08DZARqlZiTuiixsn2YdoCgfKKCL0Q5ru0jrPC+zRAjNz+FQT6YhS4u5\nJLWSobW1qwKBgBjL/B8bzfva56LOkEx6vooXDUQ9viK/AbhftjzxhMOR8T2ZyDIk\npglLR5H5aklBCDC4UjYGG1DqJYDIyHFMJ9p8DVsb+m0w9fnMCUUrxa81oU+LEKZY\nMCA95R9PuzDPak0ktyNw3gg8fGLz3yeLOPcUWBovLbirXSpyDYNhWUEFAoGBAIoX\nJPHZyfG6dIZVDSEZ2M14kMCLUvS48k1eB20nrHNlS0D4PGGzQYcXAwJV+Sf/kQhj\nejFlB31XxhwWcgZUUXEyM9zS1s85gAeMdd5dQUE5EH1KS08C0UuUhGQW2vc41SA7\n1rk2tt8aVvl5K67aKTJfKW3fvCu3W1c9bS9DFDbjAoGAPHHawBu4+GBwcLC8TfdF\nwv+vy0bgqREGRnUAwSABuXiq3+EtZD3LBjo5lJN8jUJLJfc7YQvCORUDo2cTG042\n2e8pv8s6EYFVDylqtalwSWZ7tUaUfwNYUcOO88ToRlWZdsYTcHYNcJcfs9tTh0GK\nvgD4qVW475t9d9W/UJqzDOw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "local-zaca@ultimate-choir-381918.iam.gserviceaccount.com",
+  "client_id": "102931067757084401502",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/local-zaca%40ultimate-choir-381918.iam.gserviceaccount.com"
+}

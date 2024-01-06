@@ -18,25 +18,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup JDK
+      - name: COnfiguração do JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # - name: Given Gradlew permission to execute
-      #   run: chmod +x gradlew
+      - name: Permissão de execução gradlew
+        run: chmod +x gradlew
 
-      # - name: Building
-      #   run: ./gradlew build
+      - name: Building
+        run: ./gradlew build
 
-  deploy-dev:
-    needs: build
-    runs-on: ubuntu-latest
+  # deploy-dev:
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v2
 
       # - name: Set up Google Cloud CLI
       #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
@@ -45,11 +45,11 @@ jobs:
       #     service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_DEV }}
       #     project_id: ${{ secrets.GOOGLE_PROJECT_ID_DEV }}
 
-      - name: Install kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-          kubectl version --client
+      # - name: Install kubectl
+      #   run: |
+      #     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      #     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      #     kubectl version --client
 
       # - name: Configure access to GKE cluster
       #   run: |
@@ -83,20 +83,20 @@ jobs:
       #     sleep 5
       #     kubectl get svc -n $NAME_SPACE_DEV
 
-  deploy-prod:
-    needs: build
-    runs-on: ubuntu-latest
+  # deploy-prod:
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v2
 
-      - name: Set up Google Cloud CLI
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
-        with:
-          version: 'latest'
-          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_PROD }}
-          project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+  #     - name: Set up Google Cloud CLI
+  #       uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
+  #       with:
+  #         version: 'latest'
+  #         service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_PROD }}
+  #         project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
 
       # - name: Install kubectl
       #   run: |

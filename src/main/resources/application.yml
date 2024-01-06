@@ -1,0 +1,56 @@
+micronaut:
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+  logging:
+    level:
+      io.micronaut: WARN
+      br.com.houer.tab.executiveview: DEBUG
+    loggers:
+      br.com.houer.tab.executiveview:
+        level: DEBUG
+        handlers:
+          - CONSOLE
+  server:
+    context-path: /tab-executive-view
+    cors:
+      enabled: true
+      configurations:
+        web:
+          allowed-origins: 'https://houer-tab.sambatech.dev'
+          allowed-methods: 'GET, HEAD, POST, PUT, DELETE, OPTIONS'
+          allowed-headers: 'Content-Type, Authorization'
+          exposed-headers: 'Content-Type, Authorization'
+          allow-credentials: true
+  netty:
+    event-loops:
+      custom-event-loop:
+        num-threads: 10
+  http:
+    client:
+      event-loop-group: custom-event-loop
+      read-timeout: 20s
+jackson:
+  serialization:
+    write-dates-as-timestamps: false
+  date-format: 'yyyy-MM-dd HH:mm:ss'
+storage:
+  inspection:
+    bucket:
+      name: 'tab-der-painel-prod-inspections'
+
+houer:
+  forms:
+    ids:
+      - 64ac4e5aed5fb23ccf591458
+      - 64e50b3018826e1450ca2a17
+      - 64e50bf8ac11322626324af2
+      - 64e50d59ac11322626324b06
+      - 64e50e0318826e1450ca2a37
+      - 64e50e3618826e1450ca2a3f
+      - 64e50eac18826e1450ca2a47
