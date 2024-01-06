@@ -30,13 +30,13 @@ jobs:
       - name: Building
         run: ./gradlew build
 
-  # deploy-dev:
-  #   needs: build
-  #   runs-on: ubuntu-latest
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v2
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
       # - name: Set up Google Cloud CLI
       #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
@@ -45,11 +45,11 @@ jobs:
       #     service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_DEV }}
       #     project_id: ${{ secrets.GOOGLE_PROJECT_ID_DEV }}
 
-      # - name: Install kubectl
-      #   run: |
-      #     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-      #     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-      #     kubectl version --client
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          kubectl version --client
 
       # - name: Configure access to GKE cluster
       #   run: |
