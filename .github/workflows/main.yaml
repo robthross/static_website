@@ -70,6 +70,7 @@ jobs:
             echo "REACT_APP_AUTH0_LOGOUT_URL=${{ secrets.PROD_REACT_APP_AUTH0_LOGOUT_URL }}" >> .env
             echo "AUTH0_AUDIENCE=${{ secrets.PROD_AUTH0_AUDIENCE }}" >> .env
           fi
+          
       # - name: Configure access to GKE cluster
       #   run: |
       #     gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME_DEV }} --region us-central1
