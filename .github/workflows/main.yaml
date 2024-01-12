@@ -24,11 +24,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Permissão de execução gradlew
-        run: chmod +x gradlew
+      # - name: Permissão de execução gradlew
+      #   run: chmod +x gradlew
 
-      - name: Building
-        run: ./gradlew build
+      # - name: Building
+      #   run: ./gradlew build
 
   deploy-dev:
     needs: build
@@ -51,6 +51,25 @@ jobs:
           sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
           kubectl version --client
 
+      - name: Build .env file
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "Branch Develop"
+            echo "REACT_APP_API_GATEWAY=${{ secrets.DEV_REACT_APP_API_GATEWAY }}" >> .env
+            echo "REACT_APP_AUTH0_DOMAIN=${{ secrets.DEV_REACT_APP_AUTH0_DOMAIN }}" >> .env
+            echo "REACT_APP_AUTH0_CLIENT_ID=${{ secrets.DEV_REACT_APP_AUTH0_CLIENT_ID }}" >> .env
+            echo "REACT_APP_AUTH0_CALLBACK_URL=${{ secrets.DEV_REACT_APP_AUTH0_CALLBACK_URL }}" >> .env
+            echo "REACT_APP_AUTH0_LOGOUT_URL=${{ secrets.DEV_REACT_APP_AUTH0_LOGOUT_URL }}" >> .env
+            echo "AUTH0_AUDIENCE=${{ secrets.DEV_AUTH0_AUDIENCE }}" >> .env
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Branch Main"
+            echo "REACT_APP_API_GATEWAY=${{ secrets.PROD_REACT_APP_API_GATEWAY }}" >> .env
+            echo "REACT_APP_AUTH0_DOMAIN=${{ secrets.PROD_REACT_APP_AUTH0_DOMAIN }}" >> .env
+            echo "REACT_APP_AUTH0_CLIENT_ID=${{ secrets.PROD_REACT_APP_AUTH0_CLIENT_ID }}" >> .env
+            echo "REACT_APP_AUTH0_CALLBACK_URL=${{ secrets.PROD_REACT_APP_AUTH0_CALLBACK_URL }}" >> .env
+            echo "REACT_APP_AUTH0_LOGOUT_URL=${{ secrets.PROD_REACT_APP_AUTH0_LOGOUT_URL }}" >> .env
+            echo "AUTH0_AUDIENCE=${{ secrets.PROD_AUTH0_AUDIENCE }}" >> .env
+          fi
       # - name: Configure access to GKE cluster
       #   run: |
       #     gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME_DEV }} --region us-central1
