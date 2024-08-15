@@ -89,6 +89,10 @@ jobs:
           gcloud auth activate-service-account --key-file=gcp-service-account-prod.json --project=$GCP_PROJECT_ID_PROD
           gcloud config set project $GCP_PROJECT_ID_PROD
 
+      - name: Realizar o build da imagem Kotlin com Gradle (Produção)
+        run: |
+          ./gradlew buildes
+
       - name: Pegar número sequencial da branch (Produção)
         id: branch_number_prod
         run: echo "::set-output name=branch_number_prod::${GITHUB_RUN_NUMBER}"
