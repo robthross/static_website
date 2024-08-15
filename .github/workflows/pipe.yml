@@ -1,0 +1,155 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    # tags:
+    #   - 'v*' # Trigger only for tags that start with 'v'
+    branches:
+      - develop
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      CI: "false"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: COnfiguração do JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # - name: Permissão de execução gradlew
+      #   run: chmod +x gradlew
+
+      # - name: Building
+      #   run: ./gradlew build
+
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # - name: Set up Google Cloud CLI
+      #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
+      #   with:
+      #     version: 'latest'
+      #     service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_DEV }}
+      #     project_id: ${{ secrets.GOOGLE_PROJECT_ID_DEV }}
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          kubectl version --client
+
+      - name: Build .env file
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "Branch Develop"
+            echo "REACT_APP_API_GATEWAY=${{ secrets.DEV_REACT_APP_API_GATEWAY }}" >> .env
+            echo "REACT_APP_AUTH0_DOMAIN=${{ secrets.DEV_REACT_APP_AUTH0_DOMAIN }}" >> .env
+            echo "REACT_APP_AUTH0_CLIENT_ID=${{ secrets.DEV_REACT_APP_AUTH0_CLIENT_ID }}" >> .env
+            echo "REACT_APP_AUTH0_CALLBACK_URL=${{ secrets.DEV_REACT_APP_AUTH0_CALLBACK_URL }}" >> .env
+            echo "REACT_APP_AUTH0_LOGOUT_URL=${{ secrets.DEV_REACT_APP_AUTH0_LOGOUT_URL }}" >> .env
+            echo "AUTH0_AUDIENCE=${{ secrets.DEV_AUTH0_AUDIENCE }}" >> .env
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Branch Main"
+            echo "REACT_APP_API_GATEWAY=${{ secrets.PROD_REACT_APP_API_GATEWAY }}" >> .env
+            echo "REACT_APP_AUTH0_DOMAIN=${{ secrets.PROD_REACT_APP_AUTH0_DOMAIN }}" >> .env
+            echo "REACT_APP_AUTH0_CLIENT_ID=${{ secrets.PROD_REACT_APP_AUTH0_CLIENT_ID }}" >> .env
+            echo "REACT_APP_AUTH0_CALLBACK_URL=${{ secrets.PROD_REACT_APP_AUTH0_CALLBACK_URL }}" >> .env
+            echo "REACT_APP_AUTH0_LOGOUT_URL=${{ secrets.PROD_REACT_APP_AUTH0_LOGOUT_URL }}" >> .env
+            echo "AUTH0_AUDIENCE=${{ secrets.PROD_AUTH0_AUDIENCE }}" >> .env
+          fi
+
+      # - name: Configure access to GKE cluster
+      #   run: |
+      #     gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME_DEV }} --region us-central1
+      #     export KUBECONFIG=$HOME/.kube/config
+      #     kubectl get nodes
+
+      # - name: Build and push docker image to GCP registry
+      #   run: |
+      #     export TAG=1.${{ github.run_number }}
+      #     echo $TAG
+      #     gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+      #     echo "${{ secrets.GCLOUD_SERVICE_KEY_DEV }}" > service_key.json
+      #     docker build -t $IMAGE_NAME --build-arg database=${{ secrets.BIGQUERY_DATABASE }} --build-arg service_key=${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }} --build-arg cors_origin=${{ secrets.MICRONAUT_CORS }} .
+      #     docker tag $IMAGE_NAME us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID_DEV }}/${{ secrets.PROJECT_NAME_DEV }}/$IMAGE_NAME:$TAG
+      #     docker push us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID_DEV }}/${{ secrets.PROJECT_NAME_DEV }}/$IMAGE_NAME:$TAG
+
+      # - name: Deploy the docker image to GKE cluster
+      #   run: |
+      #     export TAG=1.${{ github.run_number }}
+      #     echo $TAG
+      #     echo $K8S_PATH
+      #     sed -i -e "s/IMG_TAG/$TAG/g" $K8S_PATH
+      #     cat $K8S_PATH
+      #     kubectl create secret docker-registry $NAME_SPACE_DEV --namespace=$NAME_SPACE_DEV \
+      #       --docker-server=us-central1-docker.pkg.dev\
+      #       --docker-username=_json_key \
+      #       --docker-email=houer-dev@ultimate-choir-381918.iam.gserviceaccount.com \
+      #       --docker-password="$(cat /tmp/keyfile.json)" || echo 'secret exists'
+      #     kubectl apply -f $K8S_PATH
+      #     sleep 5
+      #     kubectl get svc -n $NAME_SPACE_DEV
+
+  # deploy-prod:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v2
+
+  #     - name: Set up Google Cloud CLI
+  #       uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
+  #       with:
+  #         version: 'latest'
+  #         service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_PROD }}
+  #         project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+
+      # - name: Install kubectl
+      #   run: |
+      #     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      #     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      #     kubectl version --client
+
+      # - name: Configure access to GKE cluster
+      #   run: |
+      #     gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME_PROD }} --region us-central1
+      #     export KUBECONFIG=$HOME/.kube/config
+      #     kubectl get nodes
+
+      # - name: Build and push docker image to GCP registry
+      #   run: |
+      #     export TAG=1.${{ github.run_number }}
+      #     echo $TAG
+      #     gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+      #     echo "${{ secrets.GCLOUD_SERVICE_KEY_PROD }}" > service_key.json
+      #     docker build -t $IMAGE_NAME --build-arg database=${{ secrets.BIGQUERY_DATABASE }} --build-arg service_key=${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_PROD }} --build-arg cors_origin=${{ secrets.MICRONAUT_CORS }} .
+      #     docker tag $IMAGE_NAME us-central1-docker.pkg.dev/${{ secrets.GOOGLE_PROJECT_ID_PROD }}/${{ secrets.PROJECT_NAME_PROD }}/$IMAGE_NAME:$TAG
+      #     docker push us-central1-docker.pkg.dev/${{ secrets.GOOGLE_PROJECT_ID_PROD }}/${{ secrets.PROJECT_NAME_PROD }}/$IMAGE_NAME:$TAG
+
+      # - name: Deploy the docker image to GKE cluster
+      #   run: |
+      #     export TAG=1.${{ github.run_number }}
+      #     sed -i -e "s/IMG_TAG/$TAG/g" $K8S_PATH_PROD
+      #     kubectl create secret docker-registry $NAME_SPACE_PROD --namespace=$NAME_SPACE_PROD \
+      #       --docker-server=us-central1-docker.pkg.dev\
+      #       --docker-username=_json_key \
+      #       --docker-email=houer-dev@ultimate-choir-381918.iam.gserviceaccount.com \
+      #       --docker-password="$(cat /tmp/keyfile.json)" || echo 'secret exists'
+      #     kubectl apply -f $K8S_PATH_PROD
+      #     sleep 5
+      #     kubectl get svc -n $NAME_SPACE_PROD
