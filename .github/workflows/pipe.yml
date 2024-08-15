@@ -2,154 +2,116 @@ name: CI/CD Pipeline
 
 on:
   push:
-    # tags:
-    #   - 'v*' # Trigger only for tags that start with 'v'
     branches:
-      - develop
+      - dev
+  pull_request:
+    branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      CI: "false"
-
     steps:
-      - name: Checkout
+      - name: Checkout código-fonte
         uses: actions/checkout@v2
 
-      - name: COnfiguração do JDK
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+      - name: Autenticar no GCP
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          echo "$GCP_SA_KEY" > gcp-service-account.json
+          gcloud auth activate-service-account --key-file=gcp-service-account.json --project=$GCP_PROJECT_ID
+          gcloud config set project $GCP_PROJECT_ID
 
-      # - name: Permissão de execução gradlew
-      #   run: chmod +x gradlew
-
-      # - name: Building
-      #   run: ./gradlew build
-
-  deploy-dev:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      # - name: Set up Google Cloud CLI
-      #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
-      #   with:
-      #     version: 'latest'
-      #     service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_DEV }}
-      #     project_id: ${{ secrets.GOOGLE_PROJECT_ID_DEV }}
-
-      - name: Install kubectl
+      - name: Instalar Kubectl
         run: |
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-          kubectl version --client
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
 
-      - name: Build .env file
+      # - name: Realizar o build da imagem Kotlin com Gradle
+      #   run: |
+      #     ./gradlew build
+
+      - name: Pegar número sequencial da branch
+        id: branch_number
+        run: echo "::set-output name=branch_number::${GITHUB_RUN_NUMBER}"
+
+      - name: Definir variável IMG
+        id: img_variable
+        run: echo "::set-output name=img_variable::${{ steps.branch_number.outputs.branch_number }}"
+
+      - name: Realizar sed para atualizar o manifesto Kube
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "Branch Develop"
-            echo "REACT_APP_API_GATEWAY=${{ secrets.DEV_REACT_APP_API_GATEWAY }}" >> .env
-            echo "REACT_APP_AUTH0_DOMAIN=${{ secrets.DEV_REACT_APP_AUTH0_DOMAIN }}" >> .env
-            echo "REACT_APP_AUTH0_CLIENT_ID=${{ secrets.DEV_REACT_APP_AUTH0_CLIENT_ID }}" >> .env
-            echo "REACT_APP_AUTH0_CALLBACK_URL=${{ secrets.DEV_REACT_APP_AUTH0_CALLBACK_URL }}" >> .env
-            echo "REACT_APP_AUTH0_LOGOUT_URL=${{ secrets.DEV_REACT_APP_AUTH0_LOGOUT_URL }}" >> .env
-            echo "AUTH0_AUDIENCE=${{ secrets.DEV_AUTH0_AUDIENCE }}" >> .env
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "Branch Main"
-            echo "REACT_APP_API_GATEWAY=${{ secrets.PROD_REACT_APP_API_GATEWAY }}" >> .env
-            echo "REACT_APP_AUTH0_DOMAIN=${{ secrets.PROD_REACT_APP_AUTH0_DOMAIN }}" >> .env
-            echo "REACT_APP_AUTH0_CLIENT_ID=${{ secrets.PROD_REACT_APP_AUTH0_CLIENT_ID }}" >> .env
-            echo "REACT_APP_AUTH0_CALLBACK_URL=${{ secrets.PROD_REACT_APP_AUTH0_CALLBACK_URL }}" >> .env
-            echo "REACT_APP_AUTH0_LOGOUT_URL=${{ secrets.PROD_REACT_APP_AUTH0_LOGOUT_URL }}" >> .env
-            echo "AUTH0_AUDIENCE=${{ secrets.PROD_AUTH0_AUDIENCE }}" >> .env
-          fi
+          sed -i "s|IMAGE_TAG|${{ steps.img_variable.outputs.img_variable }}|g" kube-deploy-dev.yaml
 
-      # - name: Configure access to GKE cluster
+      # - name: Conectar ao Kubernetes
+      #   env:
+      #     KUBECONFIG: ${{ secrets.KUBECONFIG }}
       #   run: |
-      #     gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME_DEV }} --region us-central1
-      #     export KUBECONFIG=$HOME/.kube/config
-      #     kubectl get nodes
+      #     kubectl config use-context my-kube-context
 
-      # - name: Build and push docker image to GCP registry
+      # - name: Aplicar manifest no Kubernetes
       #   run: |
-      #     export TAG=1.${{ github.run_number }}
-      #     echo $TAG
-      #     gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
-      #     echo "${{ secrets.GCLOUD_SERVICE_KEY_DEV }}" > service_key.json
-      #     docker build -t $IMAGE_NAME --build-arg database=${{ secrets.BIGQUERY_DATABASE }} --build-arg service_key=${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }} --build-arg cors_origin=${{ secrets.MICRONAUT_CORS }} .
-      #     docker tag $IMAGE_NAME us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID_DEV }}/${{ secrets.PROJECT_NAME_DEV }}/$IMAGE_NAME:$TAG
-      #     docker push us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID_DEV }}/${{ secrets.PROJECT_NAME_DEV }}/$IMAGE_NAME:$TAG
+      #     # kubectl apply -f kube-deploy-dev.yaml
 
-      # - name: Deploy the docker image to GKE cluster
-      #   run: |
-      #     export TAG=1.${{ github.run_number }}
-      #     echo $TAG
-      #     echo $K8S_PATH
-      #     sed -i -e "s/IMG_TAG/$TAG/g" $K8S_PATH
-      #     cat $K8S_PATH
-      #     kubectl create secret docker-registry $NAME_SPACE_DEV --namespace=$NAME_SPACE_DEV \
-      #       --docker-server=us-central1-docker.pkg.dev\
-      #       --docker-username=_json_key \
-      #       --docker-email=houer-dev@ultimate-choir-381918.iam.gserviceaccount.com \
-      #       --docker-password="$(cat /tmp/keyfile.json)" || echo 'secret exists'
-      #     kubectl apply -f $K8S_PATH
-      #     sleep 5
-      #     kubectl get svc -n $NAME_SPACE_DEV
+  deploy_production:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
 
-  # deploy-prod:
-  #   needs: build
-  #   runs-on: ubuntu-latest
+    steps:
+      - name: Aprovar implantação de produção
+        id: approval
+        run: |
+          echo "Por favor, aprove a implantação de produção."
+          echo "Aprovação concedida."
+        continue-on-error: true
+      - name: Esperar aprovação
+        id: wait_for_approval
+        run: sleep 300 # 5 minutos
 
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v2
 
-  #     - name: Set up Google Cloud CLI
-  #       uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
-  #       with:
-  #         version: 'latest'
-  #         service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY_PROD }}
-  #         project_id: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}
+  deploy_to_production:
+    needs: deploy_production
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && needs.deploy_production.result == 'success'
 
-      # - name: Install kubectl
-      #   run: |
-      #     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-      #     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-      #     kubectl version --client
+    steps:
+      - name: Autenticar no GCP (Produção)
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID_PROD }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_PROD }}
+        run: |
+          echo "$GCP_SA_KEY" | base64 --decode > gcp-service-account-prod.json
+          gcloud auth activate-service-account --key-file=gcp-service-account-prod.json --project=$GCP_PROJECT_ID_PROD
+          gcloud config set project $GCP_PROJECT_ID_PROD
 
-      # - name: Configure access to GKE cluster
-      #   run: |
-      #     gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME_PROD }} --region us-central1
-      #     export KUBECONFIG=$HOME/.kube/config
-      #     kubectl get nodes
+      - name: Realizar o build da imagem Kotlin com Gradle (Produção)
+        run: |
+          ./gradlew buildes
 
-      # - name: Build and push docker image to GCP registry
-      #   run: |
-      #     export TAG=1.${{ github.run_number }}
-      #     echo $TAG
-      #     gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
-      #     echo "${{ secrets.GCLOUD_SERVICE_KEY_PROD }}" > service_key.json
-      #     docker build -t $IMAGE_NAME --build-arg database=${{ secrets.BIGQUERY_DATABASE }} --build-arg service_key=${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_PROD }} --build-arg cors_origin=${{ secrets.MICRONAUT_CORS }} .
-      #     docker tag $IMAGE_NAME us-central1-docker.pkg.dev/${{ secrets.GOOGLE_PROJECT_ID_PROD }}/${{ secrets.PROJECT_NAME_PROD }}/$IMAGE_NAME:$TAG
-      #     docker push us-central1-docker.pkg.dev/${{ secrets.GOOGLE_PROJECT_ID_PROD }}/${{ secrets.PROJECT_NAME_PROD }}/$IMAGE_NAME:$TAG
+      - name: Pegar número sequencial da branch (Produção)
+        id: branch_number_prod
+        run: echo "::set-output name=branch_number_prod::${GITHUB_RUN_NUMBER}"
 
-      # - name: Deploy the docker image to GKE cluster
-      #   run: |
-      #     export TAG=1.${{ github.run_number }}
-      #     sed -i -e "s/IMG_TAG/$TAG/g" $K8S_PATH_PROD
-      #     kubectl create secret docker-registry $NAME_SPACE_PROD --namespace=$NAME_SPACE_PROD \
-      #       --docker-server=us-central1-docker.pkg.dev\
-      #       --docker-username=_json_key \
-      #       --docker-email=houer-dev@ultimate-choir-381918.iam.gserviceaccount.com \
-      #       --docker-password="$(cat /tmp/keyfile.json)" || echo 'secret exists'
-      #     kubectl apply -f $K8S_PATH_PROD
-      #     sleep 5
-      #     kubectl get svc -n $NAME_SPACE_PROD
+      - name: Definir variável IMG (Produção)
+        id: img_variable_prod
+        run: echo "::set-output name=img_variable_prod::my-image-prod:${{ steps.branch_number_prod.outputs.branch_number_prod }}"
+
+      - name: Realizar sed para atualizar o manifesto Kube (Produção)
+        run: |
+          sed -i "s|<REPLACE_WITH_IMAGE_TAG>|${{ steps.img_variable_prod.outputs.img_variable_prod }}|g" kube-deploy-prod.yaml
+
+      - name: Conectar ao Kubernetes (Produção)
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG_PROD }}
+        run: |
+          kubectl config use-context my-kube-context-prod
+
+      - name: Aplicar manifest no Kubernetes (Produção)
+        run: |
+          kubectl apply -f kube-deploy-prod.yaml
+s
