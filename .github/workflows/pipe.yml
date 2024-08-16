@@ -10,5 +10,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - node-version: ''
-      - bucket_name: ''
+      - bucket-name: ''
       - bucket-key: ''
