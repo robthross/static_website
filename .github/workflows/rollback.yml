@@ -1,8 +1,7 @@
 on:
-
   push:
     branches:
-    - master
+        - master
 
 jobs:
   rollback:

@@ -1,5 +1,12 @@
 on:
-    pull_request:
-        ["closed", "syncronized", "opened"]
-            branches:
-            - main
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - node-version: ''
+      - bucket-name: ''
+      - bucket-key: ''
